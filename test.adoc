@@ -1,0 +1,7 @@
+This is an adoc file
+
+Italic _Try an adoc file_
+
+Bold?  *Try something bold*
+
+Head1:Is this a header? 
