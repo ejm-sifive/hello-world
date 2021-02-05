@@ -1,0 +1,33 @@
+:project-name: SiFive Power Gating MicroArchitecture Specification
+#:imagesdir: assets/images/plate
+= {project-name} 
+:toc:
+:toc-title: Contents
+:toclevels: 3
+:listdef-labeled.style: horizontal
+:sectnums:
+:xrefstyle: short
+:icons: font
+
+= Power Gating MicroArchitecture Specification
+
+[[sifive-logo]]
+image::sifive-logo-v1.png[]
+
+Author: Ed McLellan
+
+Document Version 0.1-draft
+
+© SiFive, Inc.
+
+<<<
+== Revision history
+[cols=".^1,.^2,.^4a",options="header"]
+|===
+|Version    | Date | Notes
+|0.1        | February 5, 2021 | Initial draft
+|===
+
+<<<
+[[chapter-introduction]]
+== Introduction
