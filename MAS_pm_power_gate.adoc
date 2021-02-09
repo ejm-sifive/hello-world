@@ -1,33 +1,43 @@
-:project-name: SiFive Power Gating MicroArchitecture Specification
-#:imagesdir: assets/images/plate
-= {project-name} 
-:toc:
-:toc-title: Contents
-:toclevels: 3
-:listdef-labeled.style: horizontal
-:sectnums:
-:xrefstyle: short
-:icons: font
+Per-Tile Power Gating
+=====================
 
-= Power Gating MicroArchitecture Specification
+A per-tile power gating capability allows an idle core to be removed from the power rail to eliminate all power use.  Power gating involves latencies for the power off ramp, power on ramp and a reset flow to restore use of the core.  Therefore power gating utility must be balanced against the power savings.  Agressive use of power gating can result in performance loss.  
 
-[[sifive-logo]]
-image::sifive-logo-v1.png[]
+Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power is 10-20x with DVFS due to the voltage scaling.  At the lowest voltage levels, with effective clock gating, dynamic power should be very low leaving static power which is also low due to voltage.  Therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction.
 
-Author: Ed McLellan
+Sequence
+========
 
-Document Version 0.1-draft
+1. Jump/Interrupt to Core SW power down routine
+   Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
 
-© SiFive, Inc.
+2. Block incoming TL traffic to core 
+   Enable TL Slave Bus Blocker via MMIO register
+   Bus Blocker denies incoming requests to tile. 
 
-<<<
-== Revision history
-[cols=".^1,.^2,.^4a",options="header"]
-|===
-|Version    | Date | Notes
-|0.1        | February 5, 2021 | Initial draft
-|===
+3. Stop all internal core activity
+   3a. Disable Interrupts
+       Disable Prefetchers if possible
 
-<<<
-[[chapter-introduction]]
-== Introduction
+   3b. Flush internal state
+       Write out TIM data via SW if present
+       Flush cache dirty data via SW if present
+
+4. Wait for TL Slave Bus Blocker done
+   Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
+
+5. Block outgoing and probe activity
+   Enable TL master Bus Blocker via MMIO register
+   Probes may be possible to a coherent cache even after flush depending on coherence manager.
+   Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
+   Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
+
+6. Execute CEASE instruction
+   CEASE is the last instruction retired by core.
+   CEASE must be followed by reset to resume operation.
+
+7. External agent monitors both tile_in_cease signal and Master Bus Blocker quiesent signal.
+   When both are present, power can be safely removed from tile. 
+
+
+   
