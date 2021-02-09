@@ -9,35 +9,43 @@ Power Down Sequence
 ===================
 
 1. Jump/Interrupt to Core SW power down routine
-   Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
 
-2. Block incoming TL traffic to core 
-   Enable TL Slave Bus Blocker via MMIO register
-   Bus Blocker denies incoming requests to tile. 
+Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
+
+2. Block incoming TL traffic to core
+
+Enable TL Slave Bus Blocker via MMIO register
+Bus Blocker denies incoming requests to tile. 
 
 3. Stop all internal core activity
-3a. Flush internal state
-    Write out TIM data via SW if present
-    Flush cache dirty data via SW if present
-3a. FENCE - (unclear why this is needed in Andrew's flow)
-    Disable Interrupts
-    Disable Prefetchers if possible
+
+ 3a. Flush internal state
+     Write out TIM data via SW if present
+     Flush cache dirty data via SW if present
+
+ 3a. FENCE - (unclear why this is needed in Andrew's flow)
+     Disable Interrupts
+     Disable Prefetchers if possible
 
 4. Wait for TL Slave Bus Blocker done
-   Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
+
+Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
 
 5. Block outgoing and probe activity
-   Enable TL master Bus Blocker via MMIO register
-   Probes may be possible to a coherent cache even after flush depending on coherence manager.
-   Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
-   Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
+
+Enable TL master Bus Blocker via MMIO register
+Probes may be possible to a coherent cache even after flush depending on coherence manager.
+Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
+Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
 
 6. Execute CEASE instruction
-   CEASE is the last instruction retired by core.
-   CEASE must be followed by reset to resume operation.
+
+CEASE is the last instruction retired by core.
+CEASE must be followed by reset to resume operation.
 
 7. External agent monitors both tile_in_cease signal and Master Bus Blocker quiesent signal.
-   Enable isolate gates when both are asserted.
+
+Enable isolate gates when both are asserted.
 
 8. Power can be safely removed from tile. 
 
