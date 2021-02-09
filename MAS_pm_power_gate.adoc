@@ -5,8 +5,8 @@ A per-tile power gating capability allows an idle core to be removed from the po
 
 Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power is 10-20x with DVFS due to the voltage scaling.  At the lowest voltage levels, with effective clock gating, dynamic power should be very low leaving static power which is also low due to voltage.  Therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction.
 
-Sequence
-========
+Power Down Sequence
+===================
 
 1. Jump/Interrupt to Core SW power down routine
    Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
@@ -16,12 +16,12 @@ Sequence
    Bus Blocker denies incoming requests to tile. 
 
 3. Stop all internal core activity
-   3a. Disable Interrupts
-       Disable Prefetchers if possible
-
-   3b. Flush internal state
-       Write out TIM data via SW if present
-       Flush cache dirty data via SW if present
+3a. Flush internal state
+    Write out TIM data via SW if present
+    Flush cache dirty data via SW if present
+3a. FENCE - (unclear why this is needed in Andrew's flow)
+    Disable Interrupts
+    Disable Prefetchers if possible
 
 4. Wait for TL Slave Bus Blocker done
    Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
@@ -37,7 +37,9 @@ Sequence
    CEASE must be followed by reset to resume operation.
 
 7. External agent monitors both tile_in_cease signal and Master Bus Blocker quiesent signal.
-   When both are present, power can be safely removed from tile. 
+   Enable isolate gates when both are asserted.
+
+8. Power can be safely removed from tile. 
 
 
    
