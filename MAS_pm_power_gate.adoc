@@ -5,6 +5,35 @@ A per-tile power gating capability allows an idle core to be removed from the po
 
 Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power with effective clock gating is 10-20x when DVFS is employed due to voltage scaling.  At the lowest voltage levels static power is minimal, therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction.
 
+Instructions
+============
+
+Custom SYSTEM instruction encoding space
+
+Same as custom CSR encoding space, but with funct3=0
+
+CEASE
+-----
+- opcode 0x30500073 (similar to WFI encoding, but unlike WFI, requires M-mode)
+- After retiring CEASE, hart will not retire another instruction until reset
+- Asserts external signal after retire indicating that core is ready for power-down.  External control must also wait for bus quiesce. 
+- Intended for proposal to RISC-V standard.
+
+CFLUSH.D.L1 (Xsifivecflushdlone0p1)  (not clear what the rev implies) 
+-----------------------------------
+-opcode 0xFC000073, with optional rs1 field in bits 19:15.
+-Only available in M-mode.
+-When rs1 = x0, CFLUSH.D.L1 writes back all dirty lines and invalidates all lines in the L1 D$.
+-When rs1 != x0, CFLUSH.D.L1 writes back the line if dirty and invalidates the L1 D$ line containing the physical address that is mapped by the virtual address in integer register rs1.
+-If the effective privilege mode does not have write permissions to the address in rs1, then a store access or store page-fault exception is raised.
+-If the address in rs1 is in an uncacheable region with write permissions, the instruction has no effect but raises no exceptions.
+
+-Note that if the PMP scheme write-protects only part of a cache line, then using a value for rs1 in the write-protected region will cause an exception, whereas using a value for rs1 in the write-permitted region will write back the entire cache line.
+
+-Implemented as state machine in L1 D$. Might not be provided on systems with a coherence hub or L2$ that have a memory-mapped control port that can generate cache probes having the same effect.
+
+-Some implementations might only support the per-address variant, in which case they must raise an illegal-instruction exception when rs1 is x0. Other implementations might only support the full cache-flush variant, in which case when rs1 != x0, either an illegal-instruction exception will be raised, or the entire cache will be flushed.
+
 Power Down Sequence
 ===================
 
