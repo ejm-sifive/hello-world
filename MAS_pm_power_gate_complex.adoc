@@ -1,5 +1,5 @@
 Power Gating
-=====================
+============
 
 Per-tile power gating capability allows an idle core to be removed from the power rail to eliminate all power use.  Power gating involves latencies for the power off ramp, power on ramp and a reset flow to restore use of the core.  Therefore power gating utility must be balanced against the power savings.  Agressive use of power gating can result in performance loss.  
 
