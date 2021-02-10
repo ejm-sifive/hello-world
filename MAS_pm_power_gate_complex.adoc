@@ -1,9 +1,9 @@
 Per-Tile Power Gating
 =====================
 
-A per-tile power gating capability allows an idle core to be removed from the power rail to eliminate all power use.  Power gating involves latencies for the power off ramp, power on ramp and a reset flow to restore use of the core.  Therefore power gating utility must be balanced against the power savings.  Agressive use of power gating can result in performance loss.  
+Per-tile power gating capability allows an idle core to be removed from the power rail to eliminate all power use.  Power gating involves latencies for the power off ramp, power on ramp and a reset flow to restore use of the core.  Therefore power gating utility must be balanced against the power savings.  Agressive use of power gating can result in performance loss.  
 
-Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power with effective clock gating is 10-20x when DVFS is employed due to voltage scaling.  At the lowest voltage levels static power is minimal, therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction.
+_Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power with effective clock gating is 10-20x when DVFS is employed due to voltage scaling.  At the lowest voltage levels static power is minimal, therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction._
 
 Per-complex power gating leverages per-tile power gating when the last core in a complex requests power down.  The core complex contains additional units including the interrupt controller, debug manager, TileLink wrappers and potentially large L3.  Flushing a large L3 can greatly increase latency, so three options are provided.
 
