@@ -37,7 +37,7 @@ Power Down Sequence
 
    Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
 
-   Possible sequence addition to handle core complex power down
+   *Option to handle core complex power down*
 
  4a. If (Last-core in complex)  - last core can read CEASE state from other cores in TL MMIO regs
         Selections below based on core accessible preset MMIO reg (L3 options: powered-up functional / retention non-functionsl / power-off)
