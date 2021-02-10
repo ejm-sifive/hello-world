@@ -14,6 +14,8 @@ Per-complex power gating leverages per-tile power gating when the last core in a
 Power Down Sequence
 ===================
 
+Must be executed in Machine mode and not from a remote ITIM/DTIM. 
+
 1. Jump/Interrupt to Core SW power down routine
 
    Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
@@ -27,7 +29,7 @@ Power Down Sequence
 
  3a. Flush internal state
      Write out TIM data via SW if present
-     Flush cache dirty data via SW if present
+     Flush cache dirty data via SW if present (does this require custom instructions?)
 
  3b. FENCE - (insure cache writes complete, before int disable to catch possible errors?)
      Disable Interrupts
