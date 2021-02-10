@@ -43,15 +43,15 @@ Power Down Sequence
         Selections below based on core accessible preset MMIO reg (L3 options: powered-up functional / retention non-functionsl / power-off)
         If (L3 functional) - complex remains powered with cores powered-down for L3 service
         Else Logically isolate core-complex via bus blockers on all core-complex slave TL links
-	     if (L3 retention) - Non-functional - external agent reduces voltage instead of powering-down completely
-	        communicate with external agent to drop voltage on complex - AFTER CEASE and Busses Quiesce
-	        (requires transient wake-up capability to service external L3 activity)
-	     Else (L3 power-down)
-	        execute L3 flush sequence
-                communicate with external agent to power-down complex - AFTER CEASE and Busses Quiesce
-	     Wait for slave bus blockers done
-             Logically isolate core-complex TL master links (can a core block TL links on the complex and then block them on the core?)
-             Logically isolate Core via bus blockers on all Core TL master links via MMIO register
+           If (L3 retention) - Non-functional - external agent reduces voltage instead of powering-down completely
+              Communicate with external agent to drop voltage on complex - AFTER CEASE and Busses Quiesce
+              (requires transient wake-up capability to service external L3 activity)
+           Else (L3 power-down)
+              Execute L3 flush sequence
+              Communicate with external agent to power-down complex - AFTER CEASE and Busses Quiesce
+        Wait for slave bus blockers done
+           Logically isolate core-complex TL master links (can a core block TL links on the complex and then block them on the core?)
+           Logically isolate Core via bus blockers on all Core TL master links via MMIO register
      Else (Not Last-core)
    	Logically isolate Core via bus blockers on all Core TL master links via MMIO register
    	Probes may be received from a coherence manager even after flush
