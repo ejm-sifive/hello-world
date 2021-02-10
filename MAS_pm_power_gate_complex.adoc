@@ -49,11 +49,11 @@ Power Down Sequence
            Else (L3 power-down)
               Execute L3 flush sequence
               Communicate with external agent to power-down complex - AFTER CEASE and Busses Quiesce
-        Wait for slave bus blockers done
-           Logically isolate core-complex TL master links (can a core block TL links on the complex and then block them on the core?)
-           Logically isolate Core via bus blockers on all Core TL master links via MMIO register
+           Wait for core-complex slave bus blockers done
+           Logically isolate Core-Complex TL master links (can a core block TL links on the complex and then block them on the core?)
+        Logically isolate Core TL master links 
      Else (Not Last-core)
-   	Logically isolate Core via bus blockers on all Core TL master links via MMIO register
+   	Logically isolate Core TL master links 
    	Probes may be received from a coherence manager even after flush
    	Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
    	Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
