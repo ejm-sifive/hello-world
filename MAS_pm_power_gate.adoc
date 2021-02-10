@@ -23,7 +23,7 @@ Power Down Sequence
      Write out TIM data via SW if present
      Flush cache dirty data via SW if present
 
- 3a. FENCE - (unclear why this is needed in Andrew's flow)
+ 3b. FENCE - (insure cache writes complete, before int disable to catch possible errors?)
      Disable Interrupts
      Disable Prefetchers if possible
 
