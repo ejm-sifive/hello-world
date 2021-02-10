@@ -37,7 +37,7 @@ Power Down Sequence
 
    Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
 
-   _Possible sequence addition to handle core complex power down_
+_Possible sequence addition to handle core complex power down_
  4a. If Last-core in complex (last core can read CEASE state from other cores in TL MMIO regs)
         Selections below based on core accessible preset MMIO reg (L3 options: powered-up functional / retention non-functionsl / power-off)
         If L3 functional (complex remains powered with cores powered-down for L3 service)
@@ -53,9 +53,9 @@ Power Down Sequence
              Logically isolate Core via bus blockers on all Core TL master links via MMIO register
      Else (Not Last-core)
    	Logically isolate Core via bus blockers on all Core TL master links via MMIO register
-   	_Probes may be received from a coherence manager even after flush
+   	Probes may be received from a coherence manager even after flush
    	Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
-   	Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present._
+   	Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
 
 6. Execute CEASE instruction
 
@@ -69,8 +69,8 @@ Power Down Sequence
       Monitor Core bus blocker 
 
    Enable isolate gates when all are asserted.
-      _Isolation logic for a core is inside core-complex       
-      Isolation logic for a core complex is outside core-complex in external agent_
+      Isolation logic for a core is inside core-complex       
+      Isolation logic for a core complex is outside core-complex in external agent
 
 8. Power can be safely removed from tile. 
 
