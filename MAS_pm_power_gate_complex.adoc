@@ -25,8 +25,9 @@ CEASE
 - Asserts external signal after retire indicating that core is ready for power-down.  External control must also wait for bus quiesce. 
 - Intended for proposal to RISC-V standard.
 
-CFLUSH.D.L1 (Xsifivecflushdlone0p1)  (not clear what the rev implies) 
+CFLUSH.D.L1 (Xsifivecflushdlone0p1) 
 -----------------------------------
+
 -opcode 0xFC000073, with optional rs1 field in bits 19:15.
 -Only available in M-mode.
 -When rs1 = x0, CFLUSH.D.L1 writes back all dirty lines and invalidates all lines in the L1 D$.
