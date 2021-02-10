@@ -1,0 +1,72 @@
+Per-Tile Power Gating
+=====================
+
+A per-tile power gating capability allows an idle core to be removed from the power rail to eliminate all power use.  Power gating involves latencies for the power off ramp, power on ramp and a reset flow to restore use of the core.  Therefore power gating utility must be balanced against the power savings.  Agressive use of power gating can result in performance loss.  
+
+Power gating is the last step in reduction of core idle power.  An idle core uses both dynamic and static power, but dynamic power should be reduced to a minimum before power gating.  An estimate of the difference between peak power and idle power with effective clock gating is 10-20x when DVFS is employed due to voltage scaling.  At the lowest voltage levels static power is minimal, therefore in the presence of DVFS, per-tile power gating may not provide a large power reduction.
+
+Power Down Sequence
+===================
+
+1. Jump/Interrupt to Core SW power down routine
+
+   Routine is entered either by an external interrupt or timer-based interrupt after the core has been in WFI idle for a period of time.
+
+2. Block incoming TL traffic to core
+
+   Enable TL Slave Bus Blocker via MMIO register
+   Bus Blocker denies incoming requests to tile. 
+
+3. Stop all internal core activity
+
+ 3a. Flush internal state
+     Write out TIM data via SW if present
+     Flush cache dirty data via SW if present
+
+ 3b. FENCE - (insure cache writes complete, before int disable to catch possible errors?)
+     Disable Interrupts
+     Disable Prefetchers if possible
+
+4. Wait for TL Slave Bus Blocker done
+
+   Bus Blocker tracks outstanding transactions when enabled and reports done when bus is quiesced via MMIO register. 
+
+   _Possible sequence addition to handle core complex power down_
+ 4a. If Last-core in complex (last core can read CEASE state from other cores in TL MMIO regs)
+        Selections below based on core accessible preset MMIO reg (L3 options: powered-up functional / retention non-functionsl / power-off)
+        If core-complex remains powered up while all cores are powered down for L3 service
+        Else if retain L3 (non-functional -- is this all external agent functionality that we can spec?)
+                enable core-complex bus blockers for logical isolation
+	        communicate with external agent to drop voltage, not power down completely
+	        (this requires transient wake-up capability to service external L3 activity)
+	     Else power-down 
+	     execute L3 flush sequence
+             Logically isolate core-complex via bus blockers on all core-complex slave TL links
+	     wait for slave bus blockers done
+             Logically isolate core-complex TL master links
+     Else (not last core)
+        Block outgoing and probe activity
+   	Logically isolate Core via bus blockers on all Core TL master links via MMIO register
+   	Probes may be received from a coherence manager even after flush
+   	Bus Blocker denies outgoing requests from within tile (unexpected after step 3)
+   	Bus Blocker denies incoming probes to avoid TL bus deadlocks.  No data is present.
+
+6. Execute CEASE instruction
+
+   CEASE is the last instruction retired by core.
+   CEASE must be followed by reset to resume operation.
+
+7. External agent monitors both tile_in_cease signal and Master Bus Blocker quiesent signal.
+   If Last-Core
+      Monitor Core bus blocker and Complex bus blockers
+   Else
+      Monitor Core bus blocker 
+
+   Enable isolate gates when both are asserted.
+      Isolation logic for a core is inside core-complex       
+      Isolation logic for a core complex is outside core-complex in external agent
+
+8. Power can be safely removed from tile. 
+
+
+   
